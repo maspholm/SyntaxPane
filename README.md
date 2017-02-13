@@ -17,4 +17,4 @@ A basic syntax pane support syntax coloring. The libarary has implemented java s
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/w86763777/SimpleIDE/blob/master/LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/w86763777/SyntaxPane/blob/master/LICENSE) file for details
