@@ -1,6 +1,11 @@
 # SyntaxPane
 
-A basic syntax pane support syntax coloring. The libarary has implemented java syntax coloring adapter. If your project need other coloring adatper or different style adapter, you can implemente customized adapter.  
+SyntaxPane is a basic syntax pane supports:
+* customize syntax coloring
+* customize keyboard shortcuts
+* listen to user input easily
+
+The libarary has implemented java syntax coloring adapter and other basic keyboard shortcuts.
 
 ## Screenshots
 
