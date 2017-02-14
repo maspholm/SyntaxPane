@@ -13,7 +13,7 @@ The libarary has implemented java syntax coloring adapter and other basic keyboa
 
 ## Getting Started
 
-* Java syntax edit pane example
+* Java syntax edit pane example  
 Change fixed color which show in SyntaxEditPane by setter function of SyntaxManager. Other dynamically changeable characteristic can be changed by setter function of SyntaxEditPane.
 ```java
 JFrame frame = new JFrame();
@@ -29,11 +29,11 @@ try {
 ```
 * Design customized CodeAdapter
 
- * implement AbstractCodeAdapter
- * use textArea.getStyledTextBody() to get all text
- * use textArea.getSyntaxPainter() to get painter which help you color the syntax
- * use textArea.getSyntaxHighlightingTool() to get highlight tool which help you highligh the text
- * use textArea.getSyntaxDocumentToo() to get document tool which help you analyze text
+ 1. implement AbstractCodeAdapter
+ 2. use textArea.getStyledTextBody() to get all text
+ 3. use textArea.getSyntaxPainter() to get painter which help you color the syntax
+ 4. use textArea.getSyntaxHighlightingTool() to get highlight tool which help you highligh the text
+ 5. use textArea.getSyntaxDocumentToo() to get document tool which help you analyze text
 
 ```java
 class YourAdapter implements AbstractCodeAdapter {
@@ -54,10 +54,25 @@ class YourAdapter implements AbstractCodeAdapter {
 		// insertString as referred to above.
 		// That is if you want to do some changes by yourself, return false, otherwise return true.
 	}
-}
 
+	@Override
+	public AttributeSet getDefaultAttributeSet() {
+		// SyntaxTextArea gets default AttributeSet through this function
+		// and use it to set the characteristic attribute before call insertString()
+	}
+}
 ```
-* Design customized 
+* Design customized row header
+ * comming soon
+
+* Design customized caret
+ * comming soon
+
+* Listen to caret update
+ * comming soon
+
+* Listen to selection update
+ * comming soon
 ## Built With
 
 * [Gradle](https://gradle.org/) - Dependency Management
