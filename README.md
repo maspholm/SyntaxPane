@@ -4,6 +4,7 @@ A basic syntax pane support syntax coloring. The libarary has implemented java s
 
 ## Screenshots
 
+![ScreenShot](https://raw.github.com/w86763777/SyntaxPane/master/screenshots/1.PNG)
 
 ## Getting Started
 
