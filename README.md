@@ -28,11 +28,11 @@ try {
 ```
 * Design customized CodeAdapter
 
-- implement AbstractCodeAdapter
-- use textArea.getStyledTextBody() to get all text
-- use textArea.getSyntaxPainter() to get painter which help you color the syntax
-- use textArea.getSyntaxHighlightingTool() to get highlight tool which help you highligh the text
-- use textArea.getSyntaxDocumentToo() to get document tool which help you analyze text
+ * implement AbstractCodeAdapter
+ * use textArea.getStyledTextBody() to get all text
+ * use textArea.getSyntaxPainter() to get painter which help you color the syntax
+ * use textArea.getSyntaxHighlightingTool() to get highlight tool which help you highligh the text
+ * use textArea.getSyntaxDocumentToo() to get document tool which help you analyze text
 
 ```
 class YourAdapter implements AbstractCodeAdapter {
