@@ -41,12 +41,14 @@ class YourAdapter implements AbstractCodeAdapter {
 		// listen to text insertsion
 	}
 
+	@Override
 	public void remove(int offset, String text, SyntaxTextArea textArea) {
 		// listen to text removement
 	}
 
+	@Override
 	public boolean replace(int offset, int length, String text, SyntaxTextArea textArea) {
-        	// listen to text replacement.
+		// listen to text replacement.
 		// return true to make SyntaxTextArea replace the text by calling remove and
 		// insertString as referred to above.
 		// That is if you want to do some changes by yourself, return false, otherwise return true.
