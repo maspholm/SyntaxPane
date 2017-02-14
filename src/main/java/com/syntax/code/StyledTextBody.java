@@ -58,7 +58,7 @@ public class StyledTextBody extends TextBody {
      * of text is removed from the head of paragraph, offset should be 0
      * @param length the length of string which is removed from paragraph
      * 
-     * @throws BadLocationException if the start or length out of range
+     * @throws SyntaxException if the start or length out of range
      * @see com.syntax.ui.SyntaxTextArea
      */
     public synchronized void removeStyledText(int start, int length) throws SyntaxException {

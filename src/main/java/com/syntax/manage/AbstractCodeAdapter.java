@@ -2,7 +2,6 @@ package com.syntax.manage;
 
 import javax.swing.text.AttributeSet;
 
-import com.syntax.code.StyledTextBody;
 import com.syntax.ui.SyntaxTextArea;
 
 /**
@@ -15,7 +14,7 @@ import com.syntax.ui.SyntaxTextArea;
 public interface AbstractCodeAdapter {
     /**
      * SyntaxTextArea get {@link AttributeSet attribute} from this method to colour text
-     * before it call {@link #insertString(int, String, StyledTextBody, SyntaxPainter) insertString}
+     * before it call {@link #insertString(int,String,SyntaxTextArea) insertString}
      * 
      * @return the default attribute of paragraph
      */
@@ -51,8 +50,8 @@ public interface AbstractCodeAdapter {
      * @param text replace the text in [offset, offset + length) with text
      * @param textArea registered syntax text area
      * @return true to make {@link com.syntax.ui.SyntaxTextArea SyntaxTextArea} replace
-     * text through {@link #remove(int,String,StyledTextBody,SyntaxPainter) remove()} and
-     * {@link #insertString(int,String,StyledTextBody,SyntaxPainter) insertString()} in sequence.
+     * text through {@link #remove(int,String,SyntaxTextArea) remove()} and
+     * {@link #insertString(int,String,SyntaxTextArea) insertString()} in sequence.
      * false to make {@link com.syntax.ui.SyntaxTextArea SyntaxTextArea} do nothing
      */
     public boolean replace(int offset, int length, String text, SyntaxTextArea textArea);

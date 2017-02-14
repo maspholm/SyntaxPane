@@ -51,7 +51,6 @@ public class DefaultCodeAdapter implements AbstractCodeAdapter {
     public void insertString(int offset, String text, SyntaxTextArea textArea) {
         textArea.getSyntaxPainter().paintSyntax(offset, text.length(), getDefaultAttributeSet(), true);
     }
-    @Override
     /**
      * Empty method, this do not change any attribute on SyntaxTextArea
      * 
@@ -60,9 +59,11 @@ public class DefaultCodeAdapter implements AbstractCodeAdapter {
      * @param text the text which is removed from paragraph
      * @param textArea registered syntax text area
      */
+    @Override
     public void remove(int offset, String text, SyntaxTextArea textArea) {
         // Empty method
     }
+    @Override
     public boolean replace(int offset, int length, String text, SyntaxTextArea textArea) {
         return true;
     }

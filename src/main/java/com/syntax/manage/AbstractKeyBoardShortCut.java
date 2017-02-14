@@ -48,7 +48,7 @@ public abstract class AbstractKeyBoardShortCut extends AbstractAction {
      * Implement abstract method to convert key action into appropriate
      * short cut action
      * 
-     * @param ActionEvent given by system
+     * @param e given by system
      */
     @Override
     public final void actionPerformed(ActionEvent e) {

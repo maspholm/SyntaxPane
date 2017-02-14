@@ -1,7 +1,5 @@
 package com.syntax.manage;
 
-import java.util.Arrays;
-
 import com.syntax.code.StyledTextBody;
 import com.syntax.ui.SyntaxTextArea;
 
@@ -14,7 +12,7 @@ public class SyntaxDocumentTool {
     /**
      * Construct tool and install tool in specified TextArea
      * 
-     * @param specified textArea
+     * @param textArea specified textArea
      * @param mSyntaxManager provide default AttributeSet
      */
     public SyntaxDocumentTool(SyntaxTextArea textArea, SyntaxManager mSyntaxManager) {
