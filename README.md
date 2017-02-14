@@ -14,7 +14,8 @@ The libarary has implemented java syntax coloring adapter and other basic keyboa
 ## Getting Started
 
 * Java syntax edit pane example
-```
+Change fixed color which show in SyntaxEditPane by setter function of SyntaxManager. Other dynamically changeable characteristic can be changed by setter function of SyntaxEditPane.
+```java
 JFrame frame = new JFrame();
 try {
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,7 +35,7 @@ try {
  * use textArea.getSyntaxHighlightingTool() to get highlight tool which help you highligh the text
  * use textArea.getSyntaxDocumentToo() to get document tool which help you analyze text
 
-```
+```java
 class YourAdapter implements AbstractCodeAdapter {
 	@Override
 	public void insertString(int offset, String text, SyntaxTextArea textArea) {
@@ -53,9 +54,10 @@ class YourAdapter implements AbstractCodeAdapter {
 		// insertString as referred to above.
 		// That is if you want to do some changes by yourself, return false, otherwise return true.
 	}
+}
 
 ```
-- in 
+* Design customized 
 ## Built With
 
 * [Gradle](https://gradle.org/) - Dependency Management
