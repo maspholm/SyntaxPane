@@ -12,6 +12,7 @@ The libarary has implemented java syntax coloring adapter and other basic keyboa
 ![ScreenShot](https://raw.github.com/w86763777/SyntaxPane/master/screenshots/1.PNG)
 
 ## Getting Started
+* Add [jar](https://github.com/w86763777/SyntaxPane/blob/master/build/libs/SyntaxPane-all-1.0.jar) file to your classpath
 
 * Java SyntaxEditPane example  
 Change fixed UI color which show in SyntaxEditPane by setter function of SyntaxManager. Other dynamically changeable characteristic can be changed by setter function of SyntaxEditPane.
@@ -73,6 +74,9 @@ class YourAdapter implements AbstractCodeAdapter {
 
 * Listen to selection update
  * comming soon
+
+## Document
+* [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/docs/javadoc)
 
 ## Built With
 
