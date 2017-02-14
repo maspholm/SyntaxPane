@@ -53,7 +53,6 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 		StyledTextBody textBody = textArea.getStyledTextBody();
 		SyntaxPainter painter = textArea.getSyntaxPainter();
 		SyntaxDocumentTool docTool = textArea.getSyntaxDocumentTool();
-
 		int begin, end;
         int textLength = textBody.length();
 		char txt[] = textBody.getText().toCharArray();
