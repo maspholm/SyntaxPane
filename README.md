@@ -13,8 +13,8 @@ The libarary has implemented java syntax coloring adapter and other basic keyboa
 
 ## Getting Started
 
-* Java syntax edit pane example  
-Change fixed color which show in SyntaxEditPane by setter function of SyntaxManager. Other dynamically changeable characteristic can be changed by setter function of SyntaxEditPane.
+* Java SyntaxEditPane example  
+Change fixed UI color which show in SyntaxEditPane by setter function of SyntaxManager. Other dynamically changeable characteristic can be changed by setter function of SyntaxEditPane.
 ```java
 JFrame frame = new JFrame();
 try {
@@ -73,6 +73,7 @@ class YourAdapter implements AbstractCodeAdapter {
 
 * Listen to selection update
  * comming soon
+
 ## Built With
 
 * [Gradle](https://gradle.org/) - Dependency Management
