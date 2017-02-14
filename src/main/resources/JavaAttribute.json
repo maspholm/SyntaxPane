@@ -1,0 +1,66 @@
+{
+	"KeyWord.ClassManagingTools": {
+		"Color": "#CC33ADFF",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.Exception": {
+		"Color": "#CC33ADFF",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.ObjectReference": {
+		"Color": "#CC33ADFF",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.ReservedForFuture": {
+		"Color": "#CC33ADFF",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.Modifiers": {
+		"Color": "#CC33ADFF",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.FlowControl": {
+		"Color": "#CCFFA3FA",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.Operator": {
+		"Color": "#CCFFA3FA",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"KeyWord.PrimitiveDataType": {
+		"Color": "#CC5DEAAF",
+		"Comment": "Color for Java reserved words. For more details, see file JavaAttribute.json"
+	},
+	"ClassName": {
+		"Color": "#CC5DEAAF",
+		"Comment": "Color for class name"
+	},
+	"Brackets": {
+		"Color": "#CCFFFFFF",
+		"Comment": "Color for any kind of brackets [](){}"
+	},
+	"ConstantString": {
+		"Color": "#CCF5BC8A",
+		"Comment": "Color for constant string and the charactor in double quotes"
+	},
+	"JavaAnnotation": {
+		"Color": "#CC3DE69F",
+		"Comment": "Color for statements beginning with @"
+	},
+	"Annotation": {
+		"Color": "#CC579F38",
+		"Comment": "Color for single line annotation and multi-line annotation"
+	},
+	"ConstantVariable": {
+		"Color": "#CCFD9696",
+		"Comment": "Color for constant variable"
+	},
+	"ConstantNumber": {
+		"Color": "#CC99FD96",
+		"Comment": "Color for constant number"
+	},
+	"Normal": {
+		"Color": "#CCFFFFFF",
+		"Comment": "Color for word that doesn't belong to any other category"
+	}
+}

@@ -135,17 +135,17 @@ public class SyntaxEditPane extends JScrollPane {
         @Override
         public void insertUpdate(DocumentEvent e) {
             if(mAbstractSyntaxHeader != null)
-                mAbstractSyntaxHeader.onSyntaxInsert(mSyntaxTextArea.getTextBody(), getNumberOfLines());
+                mAbstractSyntaxHeader.onSyntaxInsert(mSyntaxTextArea.getStyledTextBody(), getNumberOfLines());
         }
         @Override
 	    public void removeUpdate(DocumentEvent e) {
             if(mAbstractSyntaxHeader != null)
-                mAbstractSyntaxHeader.onSyntaxRemove(mSyntaxTextArea.getTextBody(), getNumberOfLines());
+                mAbstractSyntaxHeader.onSyntaxRemove(mSyntaxTextArea.getStyledTextBody(), getNumberOfLines());
         }
         @Override
         public void changedUpdate(DocumentEvent e) {
             if(mAbstractSyntaxHeader != null)
-                mAbstractSyntaxHeader.onSyntaxChange(mSyntaxTextArea.getTextBody(), getNumberOfLines());
+                mAbstractSyntaxHeader.onSyntaxChange(mSyntaxTextArea.getStyledTextBody(), getNumberOfLines());
         }
         private int getNumberOfLines() {
             int textLength = mSyntaxTextArea.getDocument().getLength();

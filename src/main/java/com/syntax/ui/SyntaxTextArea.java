@@ -16,12 +16,13 @@ import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 
 import com.syntax.code.StyledTextBody;
-import com.syntax.code.TextBody;
 import com.syntax.code.StyledTextBody.StyledChangeListener;
 import com.syntax.manage.AbstractCodeAdapter;
 import com.syntax.manage.SyntaxManager;
 import com.syntax.manage.SyntaxCaretListener;
+import com.syntax.manage.SyntaxDocumentTool;
 import com.syntax.manage.SyntaxHighlighter;
+import com.syntax.manage.SyntaxHighlightingTool;
 import com.syntax.manage.SyntaxPainter;
 import com.syntax.manage.SyntaxSelectionListener;
 /**
@@ -39,6 +40,7 @@ public class SyntaxTextArea extends JTextPane {
     private SyntaxCaretListener mSyntaxCaretListener;
     private SyntaxSelectionListener mSyntaxSelectionListener;
     private SyntaxHighlighter mSyntaxHighlighter;
+    private SyntaxDocumentTool mSyntaxDocumentTool;
     private int maxTabNum;
 
     /**
@@ -68,6 +70,7 @@ public class SyntaxTextArea extends JTextPane {
         mSyntaxStyledDocument   = new SyntaxStyledDocument();
         mStyledTextBody         = new StyledTextBody();
         mSyntaxHighlighter      = new SyntaxHighlighter(mSyntaxManager);
+        mSyntaxDocumentTool     = new SyntaxDocumentTool(this, mSyntaxManager);
         maxTabNum               = DEFAULT_MAX_TAB_NUM;
         setStyledDocument(mSyntaxStyledDocument);
         setCodeAdapter(codeAdapter);
@@ -81,14 +84,38 @@ public class SyntaxTextArea extends JTextPane {
         addCaretListener(new InnerSyntaxCaretListener());
     }
     /**
-     * Get the {@link com.syntax.code.TextBody TextBody} of paragraph in text area
+     * Get the {@link com.syntax.code.StyledTextBody StyledTextBody} of paragraph in text area
      * 
-     * @return {@link com.syntax.code.TextBody TextBody} of paragraph in text area
+     * @return StyledTextBody of paragraph in text area
      */
-    public TextBody getTextBody() {
+    public StyledTextBody getStyledTextBody() {
         synchronized(mStyledTextBody) {
             return mStyledTextBody;
         }
+    }
+    /**
+     * Get SyntaxPainter of this text area
+     * 
+     * @return SyntaxPainter of this text area
+     */
+    public SyntaxPainter getSyntaxPainter() {
+        return mSyntaxStyledDocument.getSyntaxPainter();
+    }
+    /**
+     * Get SyntaxHighlightingTool of this text area
+     * 
+     * @return SyntaxHighlightingTool of this text area
+     */
+    public SyntaxHighlightingTool getSyntaxHighlightingTool() {
+        return mSyntaxHighlighter;
+    }
+    /**
+     * Get SyntaxDocumentTool of this text area
+     * 
+     * @return SyntaxDocumentTool of this text area
+     */
+    public SyntaxDocumentTool getSyntaxDocumentTool() {
+        return mSyntaxDocumentTool;
     }
     /**
      * Set selection highlightling visible. If set to not visible, the highlight of selection will not
@@ -152,6 +179,10 @@ public class SyntaxTextArea extends JTextPane {
     public void setSyntaxSelectionListener(SyntaxSelectionListener l) {
         mSyntaxSelectionListener = l;
     }
+    /**
+     * Listen to styled document changing and ask registered code adapter to color the
+     * changing part.
+     */
     private class SyntaxStyledDocument extends DefaultStyledDocument implements StyledChangeListener {
         public static final long serialVersionUID = 0;
         public SyntaxPainter painter;
@@ -164,7 +195,7 @@ public class SyntaxTextArea extends JTextPane {
             synchronized(mStyledTextBody) {
                 super.insertString(offset, text, mCodeAdapter.getDefaultAttributeSet());
                 mStyledTextBody.insertText(offset, text);
-                mCodeAdapter.insertString(offset, text, mStyledTextBody, painter);
+                mCodeAdapter.insertString(offset, text, SyntaxTextArea.this);
             }
         }
         @Override
@@ -173,8 +204,18 @@ public class SyntaxTextArea extends JTextPane {
                 super.remove(offset, len);
                 String text = mStyledTextBody.getText().substring(offset, offset + len);
                 mStyledTextBody.removeText(offset, len);
-                mCodeAdapter.remove(offset, text, mStyledTextBody, painter);
+                mCodeAdapter.remove(offset, text, SyntaxTextArea.this);
             }
+        }
+        @Override
+        public void replace(int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if(length == 0) {
+                super.replace(offset, length, text, attrs);
+                return;
+            }
+            if(mCodeAdapter.replace(offset, length, text, SyntaxTextArea.this))
+                super.replace(offset, length, text, mCodeAdapter.getDefaultAttributeSet());
+            
         }
         @Override
         public void insertStyledText(int start, String text, AttributeSet attributeSet) throws BadLocationException {
@@ -183,6 +224,9 @@ public class SyntaxTextArea extends JTextPane {
         @Override
         public void removeStyledText(int start, int length) throws BadLocationException {
             super.remove(start, length);
+        }
+        public SyntaxPainter getSyntaxPainter() {
+            return painter;
         }
     }
 
@@ -201,6 +245,7 @@ public class SyntaxTextArea extends JTextPane {
                 }
             }
             if(start != end && mSyntaxSelectionListener != null)
+                // TODO bugs
                 mSyntaxSelectionListener.selectionChange(SyntaxTextArea.this, start, end, mStyledTextBody, mSyntaxHighlighter);
         }
     }

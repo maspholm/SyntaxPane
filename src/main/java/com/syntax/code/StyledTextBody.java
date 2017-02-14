@@ -3,6 +3,8 @@ package com.syntax.code;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
+import com.syntax.manage.SyntaxException;
+
 /**
  * The content of StyledTextBody is synchronized with SyntaxTextArea.
  * Do not use {@link TextBody#insertText(int,String) insertText(int,string)}
@@ -38,13 +40,17 @@ public class StyledTextBody extends TextBody {
      * @param text the specified string which is instered to paragraph
      * @param attributeSet the attribute of text
      * 
-     * @throws BadLocationException if the start out of range
+     * @throws SyntaxException if the start out of range
      * @see com.syntax.ui.SyntaxTextArea
      */
-    public synchronized void insertStyledText(int start, String text, AttributeSet attributeSet) throws BadLocationException {
+    public synchronized void insertStyledText(int start, String text, AttributeSet attributeSet) throws SyntaxException {
         super.insertText(start, text);
         if(callback != null)
-            callback.insertStyledText(start, text, attributeSet);
+            try{
+                callback.insertStyledText(start, text, attributeSet);
+            } catch(BadLocationException e) {
+                throw new SyntaxException(e.getMessage());
+            }
     }
     /**
      * Remove text on SyntaxTextArea. The content of StyledTextBody is synchronized with SyntaxTextArea
@@ -55,10 +61,14 @@ public class StyledTextBody extends TextBody {
      * @throws BadLocationException if the start or length out of range
      * @see com.syntax.ui.SyntaxTextArea
      */
-    public synchronized void removeStyledText(int start, int length) throws BadLocationException {
+    public synchronized void removeStyledText(int start, int length) throws SyntaxException {
         super.removeText(start, length);
         if(callback != null)
-            callback.removeStyledText(start, length);
+            try{
+                callback.removeStyledText(start, length);
+            } catch(BadLocationException e) {
+                throw new SyntaxException(e.getMessage());
+            }
     }
     /**
      * Regist StyledChangeListener to StyledTextBody

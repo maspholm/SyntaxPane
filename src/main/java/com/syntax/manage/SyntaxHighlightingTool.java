@@ -28,8 +28,10 @@ public interface SyntaxHighlightingTool {
     public void removeHighlight(SyntaxHighlight h);
     /**
      * Remove all highlights from {@link com.syntax.ui.SyntaxTextArea}
+     * 
+     * @param removeSelection true to remove selection highlighting, false not to remove selection highlighting
      */
-    public void removeAllHighlights();
+    public void removeAllHighlights(boolean removeSelection);
     /**
      * Store highlights that have been applied on {@link com.syntax.ui.SyntaxTextArea}
      */

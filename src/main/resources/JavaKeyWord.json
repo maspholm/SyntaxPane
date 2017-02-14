@@ -1,0 +1,10 @@
+{
+    "KeyWord.ClassManagingTools": ["abstract", "extends", "implements", "import", "package", "class", "enum", "interface"],
+    "KeyWord.Exception": ["try", "throw", "catch", "assert", "finally", "throws"],
+    "KeyWord.ObjectReference": ["super", "this"],
+    "KeyWord.ReservedForFuture": ["strictfp", "const", "goto"],
+    "KeyWord.Modifiers": ["final", "private", "protected", "public", "synchronized", "volatile", "transient", "native", "static"],
+    "KeyWord.FlowControl": ["while", "do", "for", "break", "continue", "switch", "case", "default", "if", "else", "return"],
+    "KeyWord.Operator": ["instanceof", "new"],
+    "KeyWord.PrimitiveDataType": ["boolean", "byte", "char", "short", "int", "long", "float", "double", "void", "null", "true", "false"]
+}

@@ -12,8 +12,6 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.JTextComponent;
 
 import com.syntax.ui.SyntaxTextArea;
-
-
 import com.syntax.ui.AbstractSyntaxCaret.NoHighlightPainter;
 /**
  * Implement SyntaxHighlightingTool to support highlighting on SyntaxTextArea
@@ -56,6 +54,7 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public Object addHighlight(int p0, int p1, javax.swing.text.Highlighter.HighlightPainter p) throws BadLocationException {
+        System.out.println("addHighlight");
         if(p instanceof NoHighlightPainter)
             return p;
         else
@@ -72,6 +71,7 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public void changeHighlight(Object tag, int p0, int p1) throws BadLocationException {
+        System.out.println("changeHighlight");
         if(tag instanceof NoHighlightPainter)
             return;
         else
@@ -84,6 +84,7 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public void removeHighlight(Object tag) {
+        System.out.println("removeHighlight");
         if(tag instanceof NoHighlightPainter)
             return;
         else
@@ -108,7 +109,7 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public void deinstall(JTextComponent mTextComponent) {
-        super.install(mTextComponent);
+        super.deinstall(mTextComponent);
         this.mTextComponent = null;
     }
     /**
@@ -160,11 +161,16 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
     }
     /**
      * Remove all highlights added by {@link #syntaxHighlight(int,int,Color) syntaxHighlight(int,int,Color)}
+     * 
+     * @param removeSelection true to remove selection highlighting, false not to remove selection highlighting
      */
     @Override
-    public void removeAllHighlights() {
-        for(SyntaxHighlight h: highlights)
-            removeHighlight(h.getKey());
+    public void removeAllHighlights(boolean removeSelection) {
+        if(removeSelection)
+            super.removeAllHighlights();
+        else
+            for(SyntaxHighlight h: highlights)
+                removeHighlight(h.getKey());
         highlights.clear();
     }
     /**
@@ -197,6 +203,7 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
          * @param bounds the bounding box for the highlight
          * @param c the editor
          */
+        @Override
         public void paint(Graphics g, int offs0, int offs1, Shape bounds, JTextComponent c) {
             Rectangle alloc = bounds.getBounds();
             try {

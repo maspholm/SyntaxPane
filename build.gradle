@@ -4,6 +4,12 @@ version = '1.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+task testAPI(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    main = "com.test.ui.SyntaxEditPaneSample"
+}
+
 configurations {
     jaxDoclet
 }
@@ -13,11 +19,12 @@ repositories {
 }
 
 task generateJar(type: Jar) {
-	  manifest {
+	manifest {
         attributes 'Implementation-Title': 'Syntax Pane Jar', 'Implementation-Version': version
     }
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    exclude('com/test/**')
     with jar
 }
 
@@ -34,4 +41,5 @@ dependencies {
 task generateRestApiDocs(type: Javadoc) {
     source = sourceSets.main.allJava
     options.docletpath = configurations.jaxDoclet.files.asType(List)
+    exclude('com/test/**')
 }

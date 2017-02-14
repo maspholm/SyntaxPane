@@ -1,12 +1,12 @@
 package com.syntax.manage;
 
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
 
 import com.syntax.code.StyledTextBody;
 import com.syntax.manage.AbstractCodeAdapter;
 import com.syntax.manage.JavaKeyWord.KeyWordKind;
 import com.syntax.manage.JavaSyntaxAttributes.SyntaxKind;
+import com.syntax.ui.SyntaxTextArea;
 /**
  * An implementation of AbstractCodeAdapter. It can handle syntax coloring of java file
  * 
@@ -49,21 +49,29 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 	 * @see JavaKeyWord
 	 */
 	@Override
-    public synchronized void insertString(int start, String text, StyledTextBody textBody, SyntaxPainter painter) {
+    public synchronized void insertString(int start, String text, SyntaxTextArea textArea) {
+		StyledTextBody textBody = textArea.getStyledTextBody();
+		SyntaxPainter painter = textArea.getSyntaxPainter();
+		SyntaxDocumentTool docTool = textArea.getSyntaxDocumentTool();
+
 		int begin, end;
         int textLength = textBody.length();
 		char txt[] = textBody.getText().toCharArray();
 		String relateChange = textBody.getText().substring(Math.max(start - 1, 0), Math.min(start + text.length() + 1, textLength));
-		if(containAnnotation(relateChange)) {
-			begin = 0;
-			end = textLength - 1;
-		} else {
-			begin = lineBegin(start, txt);
-			end = lineEnd(start + text.length() - 1, txt);
+		
+		try {
+			if(containAnnotation(relateChange)) {
+				begin = 0;
+				end = textLength - 1;
+			} else {
+				begin = docTool.lineBegin(start);
+				end = docTool.lineEnd(start + text.length());
+			}
+			startPainting(begin, end, txt, painter);
+			addTabs(start, text, textBody, docTool);
+		} catch (SyntaxException e) {
+			e.printStackTrace();
 		}
-		startPainting(begin, end, txt, painter);
-
-		addTabs(start, text, textBody, painter);
     }
 	/**
 	 * Color syntax after text removed from SyntaxTextArea. Color and Keyword
@@ -73,23 +81,47 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 	 * @see JavaKeyWord
 	 */
 	@Override
-    public synchronized void remove(int start, String text, StyledTextBody textBody, SyntaxPainter painter) {
+    public synchronized void remove(int start, String text, SyntaxTextArea textArea) {
+		StyledTextBody textBody = textArea.getStyledTextBody();
+		SyntaxPainter painter = textArea.getSyntaxPainter();
+		SyntaxDocumentTool docTool = textArea.getSyntaxDocumentTool();
+
 		String relate = textBody.getText().substring(Math.max(start - 1, 0), Math.min(start + text.length() + 1, textBody.length()));
 		boolean flag = containAnnotation(relate);
 		int textLength= textBody.length();
-		if(textLength != 0) {
-			char txt[] = textBody.getText().toCharArray();
-			int begin, end;
-			if(flag) {
-				begin = 0;
-				end = textLength - 1;
-			} else {
-				begin = lineBegin(Math.min(start, textLength - 1), txt);
-				end = lineEnd(Math.min(start, textLength - 1), txt);
+
+		try {
+			if(textLength != 0) {
+				char txt[] = textBody.getText().toCharArray();
+				int begin, end;
+				if(flag) {
+					begin = 0;
+					end = textLength - 1;
+				} else {
+					begin = docTool.lineBegin(start);
+					end = docTool.lineEnd(start);
+				}
+				startPainting(begin, end, txt, painter);
 			}
-			startPainting(begin, end, txt, painter);
+		} catch (SyntaxException e) {
+			e.printStackTrace();
 		}
     }
+	@Override
+    public boolean replace(int offset, int length, String text, SyntaxTextArea textArea) {
+		StyledTextBody textBody = textArea.getStyledTextBody();
+		SyntaxDocumentTool docTool = textArea.getSyntaxDocumentTool();
+		try {
+			if(length != 0 && text.equals("\t") && docTool.inSameLine(offset, offset + length) == false) {
+				multilineTab(offset, length, textBody, docTool);
+				return false;
+			} else
+				return true;
+		} catch(SyntaxException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 
     private void startPainting(int begin, int end, char txt[], SyntaxPainter painter) {
 		words(begin, end, txt, painter);
@@ -221,60 +253,60 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 				}
 		}
 	}
-	private void addTabs(int offset, String changeStr, StyledTextBody textBody, SyntaxPainter painter) {
+	private void multilineTab(int offset, int length, StyledTextBody textBody, SyntaxDocumentTool docTool) throws SyntaxException{
+		int end = docTool.lineEnd(offset + length);
+		System.out.println("end " + end);
+		while( true ) {
+			docTool.addFrontTab(offset);
+			end++;
+			offset = docTool.lineEnd(offset) + 2;
+			if(offset > end)
+				break;
+		}
+	}
+	private void addTabs(int offset, String changeStr, StyledTextBody textBody, SyntaxDocumentTool docTool) throws SyntaxException {
+
 		if(offset > 0) {
 			String paragraph = textBody.getText();
 			char txt[] = paragraph.toCharArray();
 			if(changeStr.equals("\n")) {
 				int tabs = countPrefixTabs(offset - 1, txt);
-				int preLineBegin = lineBegin(offset - 1, txt);
-				int preLineEnd = lineEnd(offset - 1, txt);
+				int preLineBegin = docTool.lineBegin(offset);
+				int preLineEnd = docTool.lineEnd(offset);
 				String preLine = paragraph.substring(preLineBegin, preLineEnd + 1);
 				if(txt[offset - 1] == '{' || newLineTabPolicy(preLine) == WHILE_DO_FOR_IF_ELSE)
 					tabs++;
 				else if(preLineBegin - 2 >= 0) {
-					int prepreLineBegin = lineBegin(preLineBegin - 2,txt);
-					int prepreLineEnd = lineEnd(preLineBegin - 2,txt);
+					int prepreLineBegin = docTool.lineBegin(preLineBegin - 1);
+					int prepreLineEnd = docTool.lineEnd(preLineBegin - 1);
 					String prepreLine = paragraph.substring(prepreLineBegin, prepreLineEnd + 1);
 					if(newLineTabPolicy(prepreLine) == WHILE_DO_FOR_IF_ELSE)
 						tabs--;
 				}
 				while(tabs-- > 0)
-					try {
-						textBody.insertStyledText(offset + 1, "\t", getDefaultAttributeSet());
-					} catch (BadLocationException e) {
-						e.printStackTrace();
-					}
+					textBody.insertStyledText(offset + 1, "\t", getDefaultAttributeSet());
 			}
 
 			if(changeStr.equals("{")) {
-				int thisLineBegin = lineBegin(offset, txt);
-				int thisLineEnd = lineEnd(offset, txt);
+				int thisLineBegin = docTool.lineBegin(offset);
+				int thisLineEnd = docTool.lineEnd(offset);
 				String line = paragraph.substring(thisLineBegin, thisLineEnd + 1);
 				if(newLineTabPolicy(line) == LEFT_STYLE_LEFT_BRACKET)
 					for(int i = offset - 1; i >= thisLineBegin; i--)
 						if(txt[i] == '\t') {
-							try {
-								textBody.removeStyledText(i, 1);
-							} catch(BadLocationException e) {
-								e.printStackTrace();
-							}
+							textBody.removeStyledText(i, 1);
 							break;
 						}
 			}
 			
 			if(changeStr.equals("}")) {
-				int thisLineBegin = lineBegin(offset, txt);
-				int thisLineEnd = lineEnd(offset, txt);
+				int thisLineBegin = docTool.lineBegin(offset);
+				int thisLineEnd = docTool.lineEnd(offset);
 				String line = paragraph.substring(thisLineBegin, thisLineEnd + 1);
 				if(newLineTabPolicy(line) == (LEFT_CLEAR_RIGHT_BRACKET | RIGHT_CLEAR_RIGHT_BRACKET))
 					for(int i = offset - 1; i >= thisLineBegin; i--)
 						if(txt[i] == '\t') {
-							try {
-								textBody.removeStyledText(i, 1);
-							} catch(BadLocationException e) {
-								e.printStackTrace();
-							}
+							textBody.removeStyledText(i, 1);
 							break;
 						}
 			}
@@ -347,19 +379,6 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 				return true;
 		}
 		return false;
-	}
-    private int lineBegin(int offset,char txt[]) {
-		for(int index = txt[offset]=='\n' ? offset - 1: offset ; index >= 0; index--)
-			if(txt[index] == '\n')
-				return index + 1;
-		return 0;
-	}
-    private int lineEnd(int offset,char txt[]) {
-		int textLength = txt.length;
-		for(int index = txt[offset]=='\n' ? offset + 1: offset; index < textLength; index++)
-			if(txt[index] == '\n')
-				return index - 1;
-		return textLength - 1;
 	}
 	private int countPrefixTabs(int offset,char txt[]) {
 		int index = offset;
