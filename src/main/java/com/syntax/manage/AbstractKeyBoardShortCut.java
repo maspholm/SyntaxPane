@@ -10,7 +10,7 @@ import com.syntax.ui.SyntaxTextArea;
 public abstract class AbstractKeyBoardShortCut extends AbstractAction {
     private static final long serialVersionUID = 0;
     private KeyStroke keyStroke;
-    private SyntaxTextArea textArea;
+    private SyntaxTextArea textArea = null;
     /**
      * Construct short cut with specified key stroke. The
      * {@link #ShortCutPerformed(SyntaxTextArea) ShortCutPerformed()} is called only
@@ -39,6 +39,12 @@ public abstract class AbstractKeyBoardShortCut extends AbstractAction {
         this.textArea = textArea;
     }
     /**
+     * Deinstall this action from installed {@link com.syntax.ui.SyntaxTextArea SyntaxTextArea}.
+     */
+    public final void deinstall() {
+        textArea = null;
+    }
+    /**
      * Implement abstract method to convert key action into appropriate
      * short cut action
      * 
@@ -46,7 +52,8 @@ public abstract class AbstractKeyBoardShortCut extends AbstractAction {
      */
     @Override
     public final void actionPerformed(ActionEvent e) {
-        ShortCutPerformed(textArea);
+        if(textArea != null)
+            ShortCutPerformed(textArea);
     }
     /**
      * When associate key stroke is satisfied, this method is called to

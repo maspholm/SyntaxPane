@@ -255,7 +255,6 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 	}
 	private void multilineTab(int offset, int length, StyledTextBody textBody, SyntaxDocumentTool docTool) throws SyntaxException{
 		int end = docTool.lineEnd(offset + length);
-		System.out.println("end " + end);
 		while( true ) {
 			docTool.addFrontTab(offset);
 			end++;

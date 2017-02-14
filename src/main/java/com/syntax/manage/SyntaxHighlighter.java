@@ -54,7 +54,6 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public Object addHighlight(int p0, int p1, javax.swing.text.Highlighter.HighlightPainter p) throws BadLocationException {
-        System.out.println("addHighlight");
         if(p instanceof NoHighlightPainter)
             return p;
         else
@@ -71,7 +70,6 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public void changeHighlight(Object tag, int p0, int p1) throws BadLocationException {
-        System.out.println("changeHighlight");
         if(tag instanceof NoHighlightPainter)
             return;
         else
@@ -84,7 +82,6 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      */
     @Override
     public void removeHighlight(Object tag) {
-        System.out.println("removeHighlight");
         if(tag instanceof NoHighlightPainter)
             return;
         else

@@ -1,5 +1,7 @@
 package com.syntax.manage;
 
+import java.util.Arrays;
+
 import com.syntax.code.StyledTextBody;
 import com.syntax.ui.SyntaxTextArea;
 
@@ -50,7 +52,6 @@ public class SyntaxDocumentTool {
      */
     public int lineEnd(int p) throws SyntaxException {
         synchronized(textArea) {
-            System.out.println("lineEnd");
             char txt[] = textArea.getStyledTextBody().getText().toCharArray();
             if(p > textArea.getStyledTextBody().getText().length() || p < 0)
                 throw new SyntaxException("Index out of text area " + p);
@@ -91,15 +92,15 @@ public class SyntaxDocumentTool {
      * Remove a tab in front of line where position p at
      * 
      * @param p sepcified line
-     * @return false if no more tab
+     * @return the number of character that removed
      * @throws SyntaxException if p out of rang
      */
-    public boolean removeFrontTab(int p) throws SyntaxException {
+    public int removeFrontTab(int p) throws SyntaxException {
         synchronized(textArea) {
             int begin = lineBegin(p);
             int tabs[] = countFrontTab(p);
             if(tabs[0] == 0)
-                return false;
+                return -1;
             else {
                 char txt[] = textArea.getStyledTextBody().getText().toCharArray();
                 StyledTextBody textBody = textArea.getStyledTextBody();
@@ -107,10 +108,11 @@ public class SyntaxDocumentTool {
                     while(txt[begin] != '\t')
                         begin++;
                     textBody.removeStyledText(begin, 1);
+                    return 1;
                 } else {                // remove 4 spaces
                     textBody.removeStyledText(begin, Math.min(4, tabs[2]));
+                    return Math.min(4, tabs[2]);
                 }
-                return true;
             }
         }
     }
@@ -126,7 +128,7 @@ public class SyntaxDocumentTool {
             if(p >= textArea.getStyledTextBody().getText().length() || p < 0)
                 throw new SyntaxException("Index out of text area " + p);
             char txt[] = textArea.getStyledTextBody().getText().toCharArray();
-            int index = p;
+            int index = lineEnd(p);
             int tabs = 0;
             int spaces = 0;
             while(index >= 0 && txt[index] != '\n') {

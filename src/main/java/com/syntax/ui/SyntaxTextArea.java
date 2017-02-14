@@ -18,6 +18,7 @@ import javax.swing.text.TabStop;
 import com.syntax.code.StyledTextBody;
 import com.syntax.code.StyledTextBody.StyledChangeListener;
 import com.syntax.manage.AbstractCodeAdapter;
+import com.syntax.manage.AbstractKeyBoardShortCut;
 import com.syntax.manage.SyntaxManager;
 import com.syntax.manage.SyntaxCaretListener;
 import com.syntax.manage.SyntaxDocumentTool;
@@ -25,6 +26,7 @@ import com.syntax.manage.SyntaxHighlighter;
 import com.syntax.manage.SyntaxHighlightingTool;
 import com.syntax.manage.SyntaxPainter;
 import com.syntax.manage.SyntaxSelectionListener;
+import com.syntax.manage.shortcut.ShiftTab;
 /**
  * This is an text area which supports syntax coloring, highlighting,
  * cursor painting and some other attribute setting
@@ -82,6 +84,8 @@ public class SyntaxTextArea extends JTextPane {
         mStyledTextBody.setStyledChangeListener(mSyntaxStyledDocument);
         setHighlighter(mSyntaxHighlighter);
         addCaretListener(new InnerSyntaxCaretListener());
+
+        addShortCut(new ShiftTab());
     }
     /**
      * Get the {@link com.syntax.code.StyledTextBody StyledTextBody} of paragraph in text area
@@ -178,6 +182,26 @@ public class SyntaxTextArea extends JTextPane {
      */
     public void setSyntaxSelectionListener(SyntaxSelectionListener l) {
         mSyntaxSelectionListener = l;
+    }
+    /**
+     * Add keyboard shortcut to text area. If two keyboard shortcut have same key stroke
+     * the latter added shortcut will replace the former added shortcut
+     * 
+     * @param shortCut specified keyboard shortcut
+     */
+    public void addShortCut(AbstractKeyBoardShortCut shortCut) {
+        shortCut.install(this);
+        getInputMap().put(shortCut.getKeyStroke(), shortCut);
+    }
+    /**
+     * Remove specified keyboard shortcut, use {@link AbstractKeyBoardShortCut#getKeyStroke() getKeyStroke()}
+     * to identify distinct shortcut
+     * 
+     * @param shortCut specified keyboard shortcut
+     */
+    public void removeShortCut(AbstractKeyBoardShortCut shortCut) {
+        shortCut.deinstall();
+        getInputMap().remove(shortCut.getKeyStroke());
     }
     /**
      * Listen to styled document changing and ask registered code adapter to color the
