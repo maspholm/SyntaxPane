@@ -76,7 +76,7 @@ class YourAdapter implements AbstractCodeAdapter {
  * comming soon
 
 ## Document
-* [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/docs/javadoc)
+* [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/distributions)
 
 ## Built With
 
