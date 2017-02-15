@@ -76,7 +76,7 @@ class YourAdapter implements AbstractCodeAdapter {
  * comming soon
 
 ## Document
-* [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/distributions)
+* [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/distributions/SyntaxPane-Document-1.0.zip)
 
 ## Built With
 
