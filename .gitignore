@@ -1,12 +1,12 @@
 # generated binary file
 bin/
 
-# only include SimpleIDE.jar
 .gradle
+
+# only include .jar
 build/*
 !build/libs/
-build/libs/*
-!build/libs/SimpleIDE.jar
+!build/distributions/
 
 # Ignore Gradle GUI config
 gradle-app.setting
