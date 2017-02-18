@@ -8,6 +8,9 @@ build/*
 !build/libs/
 !build/distributions/
 
+# ignore test
+src/main/java/com/test
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
