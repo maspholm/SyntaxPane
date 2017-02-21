@@ -17,6 +17,7 @@ import javax.swing.text.TabStop;
 
 import com.syntax.code.StyledTextBody;
 import com.syntax.code.StyledTextBody.StyledChangeListener;
+import com.syntax.code.TextBody.TextChangeListener;
 import com.syntax.manage.AbstractCodeAdapter;
 import com.syntax.manage.AbstractKeyBoardShortCut;
 import com.syntax.manage.SyntaxManager;
@@ -26,6 +27,8 @@ import com.syntax.manage.SyntaxHighlighter;
 import com.syntax.manage.SyntaxHighlightingTool;
 import com.syntax.manage.SyntaxPainter;
 import com.syntax.manage.SyntaxSelectionListener;
+import com.syntax.manage.shortcut.CtrlY;
+import com.syntax.manage.shortcut.CtrlZ;
 import com.syntax.manage.shortcut.ShiftTab;
 /**
  * This is an text area which supports syntax coloring, highlighting,
@@ -82,10 +85,13 @@ public class SyntaxTextArea extends JTextPane {
         setSyntaxCaretListener(null);
         setSyntaxSelectionListener(null);
         mStyledTextBody.setStyledChangeListener(mSyntaxStyledDocument);
+        mStyledTextBody.setTextChangeListener(mSyntaxStyledDocument);
         setHighlighter(mSyntaxHighlighter);
         addCaretListener(new InnerSyntaxCaretListener());
 
         addShortCut(new ShiftTab());
+        addShortCut(new CtrlZ());
+        addShortCut(new CtrlY());
     }
     /**
      * Get the {@link com.syntax.code.StyledTextBody StyledTextBody} of paragraph in text area
@@ -207,7 +213,7 @@ public class SyntaxTextArea extends JTextPane {
      * Listen to styled document changing and ask registered code adapter to color the
      * changing part.
      */
-    private class SyntaxStyledDocument extends DefaultStyledDocument implements StyledChangeListener {
+    private class SyntaxStyledDocument extends DefaultStyledDocument implements StyledChangeListener, TextChangeListener {
         public static final long serialVersionUID = 0;
         public SyntaxPainter painter;
 
@@ -217,19 +223,20 @@ public class SyntaxTextArea extends JTextPane {
         @Override
         public void insertString (int offset, String text, AttributeSet attributeset) throws BadLocationException {
             synchronized(mStyledTextBody) {
-                super.insertString(offset, text, mCodeAdapter.getDefaultAttributeSet());
-                mStyledTextBody.insertText(offset, text);
-                mCodeAdapter.insertString(offset, text, SyntaxTextArea.this);
+                mStyledTextBody.insertStyledText(offset, text, null);
             }
+        }
+        private void askAdapterToDrawInsert(int offset, String text) {
+            mCodeAdapter.insertString(offset, text, SyntaxTextArea.this);
         }
         @Override
         public void remove(int offset, int len) throws BadLocationException {
             synchronized(mStyledTextBody) {
-                super.remove(offset, len);
-                String text = mStyledTextBody.getText().substring(offset, offset + len);
-                mStyledTextBody.removeText(offset, len);
-                mCodeAdapter.remove(offset, text, SyntaxTextArea.this);
+                mStyledTextBody.removeStyledText(offset, len);
             }
+        }
+        private void askAdaptertoDrawRemove(int start, String text) {
+            mCodeAdapter.remove(start, text, SyntaxTextArea.this);
         }
         @Override
         public void replace(int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
@@ -242,12 +249,33 @@ public class SyntaxTextArea extends JTextPane {
             
         }
         @Override
-        public void insertStyledText(int start, String text, AttributeSet attributeSet) throws BadLocationException {
-            super.insertString(start, text, attributeSet);
+        public void changeStyledText(int start, String text, AttributeSet attributeSet) {
+            if(attributeSet != null)
+                super.setCharacterAttributes(start, text.length(), attributeSet, true);
+            else {
+                askAdapterToDrawInsert(start, text);
+            }
         }
         @Override
-        public void removeStyledText(int start, int length) throws BadLocationException {
-            super.remove(start, length);
+        public void removeStyledText(int start, String text) {
+            askAdaptertoDrawRemove(start, text);
+        }
+        @Override
+        public void insertChange(int start, String changeStr) {
+            try{
+                super.insertString(start, changeStr, mCodeAdapter.getDefaultAttributeSet());
+            } catch(BadLocationException e) {
+                e.printStackTrace();
+            }
+        }
+        @Override
+        public void removeChange(int start, int length) {
+            try {
+                System.out.println("remove-- start " + start + " length " + length);
+                super.remove(start, length);
+            } catch(BadLocationException e) {
+                e.printStackTrace();
+            }
         }
         public SyntaxPainter getSyntaxPainter() {
             return painter;

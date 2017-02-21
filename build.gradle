@@ -48,11 +48,3 @@ task zipDoc(type: Zip, dependsOn: 'generateRestApiDocs') {
     from 'build/docs'
     archiveName "${baseName}-Document-${version}.${extension}"
 }
-/*
-task testGrab {
-    tasks.generateRestApiDocs.execute()
-    tasks.zipDoc.execute()
-
-}
-*/
-//zipDoc.dependsOn generateRestApiDocs
