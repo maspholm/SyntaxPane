@@ -1,5 +1,5 @@
 package com.syntax.code;
 
-public interface Command {
-    public void execute();
+public interface Command extends ReversibleCommand {
+    public Command combine(Command command);
 }

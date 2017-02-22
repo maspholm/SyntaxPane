@@ -83,7 +83,7 @@ public class TextBody extends CommandModule {
      * @param rCommand the command which update this state
      */
     @Override
-    protected synchronized void nextState(ReversibleCommand rCommand) {
+    protected synchronized void nextState(Command rCommand) {
         for(int i = commands.size() - 1; i > nowState; i--)
             commands.remove(i);
         nowState++;
@@ -118,12 +118,14 @@ public class TextBody extends CommandModule {
         } else
             return false;
     }
-    protected class InsertCommand implements ReversibleCommand {
+    protected class InsertCommand implements Command {
         private int start;
         private String changeStr;
+        private boolean combineable;
         public InsertCommand(int start,String changeStr) {
             this.start = start;
             this.changeStr = new String(changeStr);
+            this.combineable = true;
         }
         @Override
         public void execute() {
@@ -137,13 +139,31 @@ public class TextBody extends CommandModule {
             if(mTextChangeListener != null)
                 mTextChangeListener.removeChange(start, changeStr.length());
         }
+        @Override
+        public Command combine(Command command) {
+            return null;
+        }
+        public int getStart() {
+            return start;
+        }
+        public String getChangeStr() {
+            return changeStr;
+        }
+        public void finish() {
+            combineable = false;
+        }
+        public boolean isCombineable() {
+            return combineable;
+        }
     }
-    protected class RemoveCommand implements ReversibleCommand {
+    protected class RemoveCommand implements Command {
         private int start;
         private String changeStr;
+        private boolean combineable;
         public RemoveCommand(int start,String changeStr) {
             this.start = start;
             this.changeStr = new String(changeStr);
+            this.combineable = true;
         }
         @Override
         public void execute() {
@@ -156,6 +176,22 @@ public class TextBody extends CommandModule {
             text.insert(start, changeStr);
             if(mTextChangeListener != null)
                 mTextChangeListener.insertChange(start, changeStr);
+        }
+        @Override
+        public Command combine(Command command) {
+            return null;
+        }
+        public int getStart() {
+            return start;
+        }
+        public String getChangeStr() {
+            return changeStr;
+        }
+        public void finish() {
+            combineable = false;
+        }
+        public boolean isCombineable() {
+            return combineable;
         }
     }
     /**

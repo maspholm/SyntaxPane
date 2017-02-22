@@ -271,7 +271,6 @@ public class SyntaxTextArea extends JTextPane {
         @Override
         public void removeChange(int start, int length) {
             try {
-                System.out.println("remove-- start " + start + " length " + length);
                 super.remove(start, length);
             } catch(BadLocationException e) {
                 e.printStackTrace();
