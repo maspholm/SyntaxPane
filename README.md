@@ -65,27 +65,26 @@ class YourAdapter implements AbstractCodeAdapter {
 ```
 ### Design customized row header
  * Implement com.syntax.ui.AbstractSyntaxHeader. Actually, AbstractSyntaxHeader is a JPanel so you can add anything to it.
- Besides, the abstract functions of AbstractSyntaxHeader provide your to listen to change different changing in syntax pane.
+ Besides, the abstract methods of AbstractSyntaxHeader provide you with callbacks which listen to various changing in syntax pane.
 
 ### Design customized caret
- * Implement com.syntax.ui.AbstractSyntaxCaret. The only abstract method should be implemented is the callback of font changing
+ * Implement com.syntax.ui.AbstractSyntaxCaret. The only abstract method should be implemented is the callback of font changing.
+ You can override **public void paint(Graphics g)** to draw customized shape or apply another color.
 
-### Listen to caret update
- * comming soon
+### Listen to caret position update
+ * Register com.syntax.manage.SyntaxCaretListener in com.syntax.ui.SyntaxTextArea
 
 ### Listen to selection update
  * comming soon
 
 ## Document
-* [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/distributions/SyntaxPane-Document-1.0.zip)
+* Download the [Document](https://github.com/w86763777/SyntaxPane/tree/master/build/distributions/SyntaxPane-Document-1.0.zip)
 
 ## Built With
-
 * [Gradle](https://gradle.org/) - Dependency Management
 * JRE version 1.8
 
 ## Authors
-
 * **Alan Wu** - *Initial work* - [Github](https://github.com/w86763777)
 
 ## License

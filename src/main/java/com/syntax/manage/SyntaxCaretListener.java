@@ -13,7 +13,7 @@ import com.syntax.code.TextBody;
  */
 public interface SyntaxCaretListener {
     /**
-     * When caret of SyntaxTextArea updats, this method is used as callback method
+     * When caret of SyntaxTextArea updats, this method is the callback
      * 
      * @param component text component of SyntaxTextArea. Use this component to locate caret position in coordinate
      * @param r representing shape of caret on SyntaxTextArea
