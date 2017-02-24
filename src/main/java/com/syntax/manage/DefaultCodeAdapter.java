@@ -5,7 +5,7 @@ import javax.swing.text.AttributeSet;
 import com.syntax.ui.SyntaxTextArea;
 
 /**
- * A basic implementation of AbstractCodeAdapter. It give all text default attribute in SyntaxManager.
+ * A basic implementation of AbstractCodeAdapter. It give all text default attribute provided by SyntaxManager.
  * 
  * @see SyntaxManager
  * @see AbstractCodeAdapter

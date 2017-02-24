@@ -8,6 +8,9 @@ import javax.swing.KeyStroke;
 import com.syntax.manage.AbstractKeyBoardShortCut;
 import com.syntax.ui.SyntaxTextArea;
 
+/**
+ * Make {@link com.syntax.ui.SyntaxTextArea SyntaxTextArea} reverse to previous state
+ */
 public class CtrlZ extends AbstractKeyBoardShortCut {
     private static final long serialVersionUID = 0;
     public CtrlZ() {

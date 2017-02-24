@@ -8,6 +8,9 @@ import javax.swing.KeyStroke;
 import com.syntax.manage.AbstractKeyBoardShortCut;
 import com.syntax.ui.SyntaxTextArea;
 
+/**
+ * Make {@link com.syntax.ui.SyntaxTextArea SyntaxTextArea} move to next state
+ */
 public class CtrlY extends AbstractKeyBoardShortCut {
     private static final long serialVersionUID = 0;
     public CtrlY() {

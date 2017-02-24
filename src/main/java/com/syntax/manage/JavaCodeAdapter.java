@@ -67,7 +67,7 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 				end = docTool.lineEnd(start + text.length());
 			}
 			startPainting(begin, end, txt, painter);
-			addTabs(start, text, textBody, docTool);
+			addTabs(start, text, textBody, docTool, textArea);
 		} catch (SyntaxException e) {
 			e.printStackTrace();
 		}
@@ -254,6 +254,7 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 	}
 	private void multilineTab(int offset, int length, StyledTextBody textBody, SyntaxDocumentTool docTool) throws SyntaxException{
 		int end = docTool.lineEnd(offset + length);
+		textBody.startForcedMerge();
 		while( true ) {
 			docTool.addFrontTab(offset);
 			end++;
@@ -261,9 +262,9 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 			if(offset > end)
 				break;
 		}
+		textBody.finishForcedMerge();
 	}
-	private void addTabs(int offset, String changeStr, StyledTextBody textBody, SyntaxDocumentTool docTool) throws SyntaxException {
-
+	private void addTabs(int offset, String changeStr, StyledTextBody textBody, SyntaxDocumentTool docTool, SyntaxTextArea textArea) throws SyntaxException {
 		if(offset > 0) {
 			String paragraph = textBody.getText();
 			char txt[] = paragraph.toCharArray();
@@ -281,32 +282,48 @@ public class JavaCodeAdapter implements AbstractCodeAdapter {
 					if(newLineTabPolicy(prepreLine) == WHILE_DO_FOR_IF_ELSE)
 						tabs--;
 				}
+				textBody.reverse();
+				textBody.startForcedMerge();
+				textBody.insertStyledText(offset, "\n", getDefaultAttributeSet());
 				while(tabs-- > 0)
 					textBody.insertStyledText(offset + 1, "\t", getDefaultAttributeSet());
+				textBody.finishForcedMerge();
 			}
 
 			if(changeStr.equals("{")) {
 				int thisLineBegin = docTool.lineBegin(offset);
 				int thisLineEnd = docTool.lineEnd(offset);
 				String line = paragraph.substring(thisLineBegin, thisLineEnd + 1);
-				if(newLineTabPolicy(line) == LEFT_STYLE_LEFT_BRACKET)
+				if(newLineTabPolicy(line) == LEFT_STYLE_LEFT_BRACKET) {
+					AttributeSet att = textArea.getCharacterAttributes();
+					textBody.reverse();
+					textBody.startForcedMerge();
+					textBody.insertStyledText(offset, "{", att);
 					for(int i = offset - 1; i >= thisLineBegin; i--)
 						if(txt[i] == '\t') {
 							textBody.removeStyledText(i, 1);
 							break;
 						}
+					textBody.finishForcedMerge();
+				}
 			}
 			
 			if(changeStr.equals("}")) {
 				int thisLineBegin = docTool.lineBegin(offset);
 				int thisLineEnd = docTool.lineEnd(offset);
 				String line = paragraph.substring(thisLineBegin, thisLineEnd + 1);
-				if(newLineTabPolicy(line) == (LEFT_CLEAR_RIGHT_BRACKET | RIGHT_CLEAR_RIGHT_BRACKET))
+				if(newLineTabPolicy(line) == (LEFT_CLEAR_RIGHT_BRACKET | RIGHT_CLEAR_RIGHT_BRACKET)) {					
+					AttributeSet att = textArea.getCharacterAttributes();
+					textBody.reverse();
+					textBody.startForcedMerge();
+					textBody.insertStyledText(offset, "}", att);
 					for(int i = offset - 1; i >= thisLineBegin; i--)
 						if(txt[i] == '\t') {
 							textBody.removeStyledText(i, 1);
 							break;
 						}
+					textBody.finishForcedMerge();
+				}
 			}
 		}
 	}

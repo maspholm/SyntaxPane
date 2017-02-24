@@ -40,6 +40,7 @@ task generateJar(type: Jar) {
 
 task generateRestApiDocs(type: Javadoc) {
     source = sourceSets.main.allJava
+    classpath = sourceSets.main.runtimeClasspath
     options.docletpath = configurations.jaxDoclet.files.asType(List)
     exclude('com/test/**')
 }

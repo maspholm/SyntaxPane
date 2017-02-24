@@ -1,6 +1,5 @@
 package com.syntax.code;
 
-import java.awt.List;
 import java.util.ArrayList;
 
 import javax.swing.text.AttributeSet;
@@ -19,6 +18,7 @@ public class StyledTextBody extends TextBody {
     private StyledChangeListener callback;
     private int nowState;
     private ArrayList<Command> commands;
+    private boolean forcedMerge;
     /**
      * Construct empty StyledTextBody
      */
@@ -35,6 +35,31 @@ public class StyledTextBody extends TextBody {
         this.callback = callback;
         commands = new ArrayList<>();
         nowState = -1;
+        forcedMerge = false;
+    }
+    /**
+     * Make the following editions containing {@link #removeStyledText(int,int) removement}
+     * and {@link #insertStyledText(int,String,AttributeSet) insertion} merge into an edition.
+     * The difference between this edition with others is that this action can be reversed
+     * by a CTRL + Z shortcut but the others can't. Use {@link #finishForcedMerge() finishForcedMerge()}
+     * to make the following editions be normal or be a separator between two merged editions
+     */
+    public synchronized void startForcedMerge() {
+        forcedMerge = true;
+    }
+    /**
+     * Stop the forced merge mode. This can be a separator between two forced merged editions or just
+     * change to mode.
+     * 
+     * @see #startForcedMerge()
+     */
+    public synchronized void finishForcedMerge() {
+        forcedMerge = false;
+        if(commands.size() != 0) {
+            Command command = commands.get(commands.size() - 1);
+            if(command instanceof CommandCollection)
+                ((CommandCollection)command).setActive(false);
+        }
     }
     /**
      * Insert text to StyledTextBody. The content of StyledTextBody is synchronized with SyntaxTextArea
@@ -51,25 +76,12 @@ public class StyledTextBody extends TextBody {
         StyledInsertCommand command = new StyledInsertCommand(start, text, attributeSet);
         if(text.length() > 1)
             command.finish();
-        nextState(command);
-    }
-    /**
-     * Insert styled text and merge this action with adjacent forced merge insertion or removement
-     * 
-     * @param start the index where the text was inserted. If the location
-     * is the head of paragraph, offset will should be 0. If the location is in the end
-     * of paragraph, offset should be the length of paragraph
-     * @param text the specified string which is instered to paragraph
-     * @param attributeSet the attribute of text
-     * 
-     * @see com.syntax.ui.SyntaxTextArea
-     */
-    public synchronized void forcedMergeInsertStyledText(int start, String text, AttributeSet attributeSet) {
-        StyledInsertCommand command = new StyledInsertCommand(start, text, attributeSet);
-        if(text.length() > 1)
-            command.finish();
-        CommandCollection commandCollection = new CommandCollection(command);
-        nextState(commandCollection);
+
+        if(forcedMerge) {
+            CommandCollection commandCollection = new CommandCollection(command);
+            nextState(commandCollection);
+        } else
+            nextState(command);
     }
     /**
      * Remove text on SyntaxTextArea. The content of StyledTextBody is synchronized with SyntaxTextArea
@@ -84,23 +96,11 @@ public class StyledTextBody extends TextBody {
         StyledRemoveCommand command = new StyledRemoveCommand(start, getText().substring(start, start + length));
         if(length > 1)
             command.finish();
-        nextState(command);
-    }
-    /**
-     * Remove styled text and merge this action with adjacent forced merge insertion or removement
-     * 
-     * @param start the index where the text was removed. If the first character
-     * of text is removed from the head of paragraph, offset should be 0
-     * @param length the length of string which is removed from paragraph
-     * 
-     * @see com.syntax.ui.SyntaxTextArea
-     */
-    public synchronized void forcedMergeRemoveStyledText(int start, int length) {
-        StyledRemoveCommand command = new StyledRemoveCommand(start, getText().substring(start, start + length));
-        if(length > 1)
-            command.finish();
-        CommandCollection commandCollection = new CommandCollection(command);
-        nextState(commandCollection);
+        if(forcedMerge) {
+            CommandCollection commandCollection = new CommandCollection(command);
+            nextState(commandCollection);
+        } else
+            nextState(command);
     }
     /**
      * Regist StyledChangeListener to StyledTextBody
@@ -113,9 +113,16 @@ public class StyledTextBody extends TextBody {
         this.callback = callback;
     }
     /**
-     * Update state with reversible command
+     * Implement {@link CommandModule#nextState(Command) nextState(Command)}.
+     * Update state by a {@link Command Command}.
+     * If the number of commands in this command module is not zero before this
+     * command is added to, this command will try to {@link Command#combine(Command) combine}
+     * the last command which have worked. If this command module have gone through some
+     * {@link #reverse() reverse} operation, some commands in command module may be reversed
+     * to un-worked state. Any command is added to command module can cause that commands in
+     * un-worked state be deleted from command list
      * 
-     * @param rCommand the command which update this state
+     * @param command the command which update this state
      */
     @Override
     protected synchronized void nextState(Command command) {
@@ -139,9 +146,11 @@ public class StyledTextBody extends TextBody {
         command.execute();
     }
     /**
-     * Reverse the last command
+     * Implement {@link CommandModule#reverse() reverse()}.
+     * Move the current state to previous state by command in command list which have be added in module.
+     * If there isn't previous command, the state will not be changed
      * 
-     * @return false if no command is reversed
+     * @return false if there is not previous state
      */
     @Override
     public boolean reverse() {
@@ -154,7 +163,9 @@ public class StyledTextBody extends TextBody {
     }
     
     /**
-     * To next state
+     * Implement {@link CommandModule#forward() forawrd()}.
+     * Move the current state to next state on command in command list which have be added in module.
+     * If there isn't next command, the state will not be changed
      * 
      * @return false if there is not next state
      */
@@ -167,7 +178,7 @@ public class StyledTextBody extends TextBody {
         } else
             return false;
     }
-    protected class StyledInsertCommand extends InsertCommand {
+    private class StyledInsertCommand extends InsertCommand {
         private int start;
         private String changeStr;
         private AttributeSet attributeSet;
@@ -208,7 +219,7 @@ public class StyledTextBody extends TextBody {
             return null;
         }
     }
-    protected class StyledRemoveCommand extends RemoveCommand {
+    private class StyledRemoveCommand extends RemoveCommand {
         private int start;
         private String changeStr;
         public StyledRemoveCommand(int start,String changeStr) {
@@ -248,15 +259,24 @@ public class StyledTextBody extends TextBody {
     }
     private class CommandCollection implements Command {
         private ArrayList<Command> commands;
+        private boolean active;
         public CommandCollection() {
             commands = new ArrayList<>();
+            active = true;
         }
         public CommandCollection(Command command) {
             commands = new ArrayList<>();
             commands.add(command);
+            active = true;
         }
         public void add(Command command) {
             commands.add(command);
+        }
+        public boolean isActive() {
+            return active;
+        }
+        public void setActive(boolean active) {
+            this.active = active;
         }
         @Override
         public void execute() {
@@ -276,11 +296,14 @@ public class StyledTextBody extends TextBody {
             CommandCollection newCommand = new CommandCollection();
             if(command instanceof CommandCollection) {
                 CommandCollection commandCollection = (CommandCollection)command;
-                for(Command cmd: commandCollection.getCommands())
-                    newCommand.add(cmd);
-                for(Command cmd: getCommands())
-                    newCommand.add(cmd);
-                return newCommand;
+                if(commandCollection.isActive()) {
+                    for(Command cmd: commandCollection.getCommands())
+                        newCommand.add(cmd);
+                    for(Command cmd: getCommands())
+                        newCommand.add(cmd);
+                    return newCommand;
+                } else
+                    return null;
             } else
                 return null;
         }
@@ -296,11 +319,18 @@ public class StyledTextBody extends TextBody {
          * 
          * @param start the start position of specified text and point out the first
          * character of text
-         * @param end the end position of specified text but it doesn't include the
-         * last character of text
+         * @param text the text which is inserted to the text body
          * @param attributeSet the attribute of text
          */
         public void changeStyledText(int start, String text, AttributeSet attributeSet);
+        /**
+         * Listener to request of changing attribute of text when removement happen on
+         * text body
+         * 
+         * @param start the start position of specified text and point out the first
+         * character of text
+         * @param text the text which is inserted to the text body
+         */
         public void removeStyledText(int start, String text);
     }
 }

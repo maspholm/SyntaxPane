@@ -78,7 +78,9 @@ public class TextBody extends CommandModule {
         return text.toString();
     }
     /**
-     * Update state with reversible command
+     * Implement {@link CommandModule#nextState(Command) nextState(Command)}.
+     * Add a command to module and apply {@link Command#execute() execute()}
+     * to change the module
      * 
      * @param rCommand the command which update this state
      */
@@ -91,6 +93,7 @@ public class TextBody extends CommandModule {
         commands.add(rCommand);
     }
     /**
+     * Implement {@link CommandModule#reverse() reverse()}.
      * Reverse the last command
      * 
      * @return false if no command is reversed
@@ -105,7 +108,8 @@ public class TextBody extends CommandModule {
             return false;
     }
     /**
-     * To next state
+     * Implement {@link CommandModule#forward() forawrd()}.
+     * If there is any command was reversed, apply it again to change the state 
      * 
      * @return false if there is not next state
      */

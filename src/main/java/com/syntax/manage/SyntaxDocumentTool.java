@@ -56,7 +56,7 @@ public class SyntaxDocumentTool {
             if(p == txt.length)
                 p--;
             int textLength = txt.length;
-            for(int index = txt[p]=='\n' ? p - 1: p; index < textLength; index++)
+            for(int index = p; index < textLength; index++)
                 if(txt[index] == '\n')
                     return index - 1;
             return textLength - 1;

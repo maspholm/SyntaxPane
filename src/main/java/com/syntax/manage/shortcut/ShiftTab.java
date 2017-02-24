@@ -5,11 +5,17 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import com.syntax.code.StyledTextBody;
+
+
 import com.syntax.manage.AbstractKeyBoardShortCut;
 import com.syntax.manage.SyntaxDocumentTool;
 import com.syntax.manage.SyntaxException;
 import com.syntax.ui.SyntaxTextArea;
 
+/**
+ * Provide deleting multiline prefix tab
+ */
 public class ShiftTab extends AbstractKeyBoardShortCut {
     private static final long serialVersionUID = 0;
     public ShiftTab() {
@@ -22,6 +28,8 @@ public class ShiftTab extends AbstractKeyBoardShortCut {
             int sEnd = textArea.getSelectionEnd();
             int begin = docTool.lineBegin(sStart);
             int end = docTool.lineEnd(sEnd);
+            StyledTextBody textBody = textArea.getStyledTextBody();
+            textBody.startForcedMerge();
             while( true ) {
                 int numRemoved = docTool.removeFrontTab(begin);
                 if(numRemoved != -1)
@@ -30,6 +38,7 @@ public class ShiftTab extends AbstractKeyBoardShortCut {
                 if(begin > end)
                     break;
             }
+            textBody.finishForcedMerge();
         } catch(SyntaxException e) {
             e.printStackTrace();
         }
