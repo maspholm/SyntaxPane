@@ -12,7 +12,7 @@ The libarary has implemented java syntax coloring adapter and other basic keyboa
 ![ScreenShot](https://raw.github.com/w86763777/SyntaxPane/master/screenshots/1.PNG)
 
 ## Getting Started
-### Add [jar](https://github.com/w86763777/SyntaxPane/blob/master/build/libs/SyntaxPane-all-1.0.jar) file to your classpath
+* Add [jar](https://github.com/w86763777/SyntaxPane/blob/master/build/libs/SyntaxPane-all-1.0.jar) file to your classpath
 
 ### Java SyntaxEditPane example  
 Change fixed UI color which show in SyntaxEditPane by setter function of SyntaxManager. Other dynamically changeable characteristic can be changed by setter function of SyntaxEditPane.
@@ -28,10 +28,10 @@ try {
 	e.printStackTrace();
 }
 ```
-* Design customized CodeAdapter
+### Design customized CodeAdapter
 
  1. implement AbstractCodeAdapter
- 2. use textArea.getStyledTextBody() to get all text
+ 2. use textArea.getStyledTextBody() to get all text, and change text on syntax pane
  3. use textArea.getSyntaxPainter() to get painter which help you color the syntax
  4. use textArea.getSyntaxHighlightingTool() to get highlight tool which help you highligh the text
  5. use textArea.getSyntaxDocumentToo() to get document tool which help you analyze text
@@ -63,16 +63,17 @@ class YourAdapter implements AbstractCodeAdapter {
 	}
 }
 ```
-* Design customized row header
- * Implement com.syntax.ui.AbstractSyntaxHeader
+### Design customized row header
+ * Implement com.syntax.ui.AbstractSyntaxHeader. Actually, AbstractSyntaxHeader is a JPanel so you can add anything to it.
+ Besides, the abstract functions of AbstractSyntaxHeader provide your to listen to change different changing in syntax pane.
 
-* Design customized caret
+### Design customized caret
+ * Implement com.syntax.ui.AbstractSyntaxCaret. The only abstract method should be implemented is the callback of font changing
+
+### Listen to caret update
  * comming soon
 
-* Listen to caret update
- * comming soon
-
-* Listen to selection update
+### Listen to selection update
  * comming soon
 
 ## Document
