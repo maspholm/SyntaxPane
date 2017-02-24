@@ -6,6 +6,10 @@ SyntaxPane is a basic syntax pane supports:
 * listen to user input easily
 
 The libarary has implemented java syntax coloring adapter and other basic keyboard shortcuts.
+* Keyboard shortcuts have been implemented
+ * Undo(CTRL + Z)
+ * Redo(CTRL + Y)
+ * Reduce one prefix tab of multi lines(Shift + tab when select more than zero text)
 
 ## Screenshots
 
