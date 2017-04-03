@@ -18,4 +18,5 @@ public interface SyntaxSelectionListener {
      * @param highlightTool support highlight text on SyntaxTextArea
      */
     public void selectionChange(JTextComponent component, int start, int end, TextBody textBody, SyntaxHighlightingTool highlightTool);
+    public void selectionRemove(JTextComponent component, TextBody textBody, SyntaxHighlightingTool highlightTool);
 }

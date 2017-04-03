@@ -17,8 +17,8 @@ import com.syntax.manage.SyntaxHighlighter.SyntaxHighlightePainter;
 public abstract class AbstractSyntaxCaret extends DefaultCaret {
     private static final long serialVersionUID = 0;
 	private static final NoHighlightPainter mNoHighlightPainter = new NoHighlightPainter();
+	private NormalSelectionPainter mNormalSelectionPainter;
 	private boolean selectionEnable;
-	private SyntaxHighlightePainter mSyntaxHighlightPainter;
 	/**
 	 * Construct AbstractSyntaxCaret with specified {@link com.syntax.manage.SyntaxManager SyntaxManager}
 	 * 
@@ -26,7 +26,7 @@ public abstract class AbstractSyntaxCaret extends DefaultCaret {
 	 * build AbstractSyntaxCaret
 	 */
 	public AbstractSyntaxCaret(SyntaxManager mSyntaxManager) {
-		mSyntaxHighlightPainter = new SyntaxHighlightePainter(mSyntaxManager.getHighlightColor());
+		mNormalSelectionPainter = new NormalSelectionPainter(mSyntaxManager.getHighlightColor());
 		selectionEnable = true;
 	}
 	/**
@@ -37,7 +37,7 @@ public abstract class AbstractSyntaxCaret extends DefaultCaret {
 	@Override
 	protected Highlighter.HighlightPainter getSelectionPainter() {
 		if(selectionEnable)
-        	return mSyntaxHighlightPainter;
+        	return mNormalSelectionPainter;
 		else
 			return mNoHighlightPainter;
     }
@@ -72,6 +72,12 @@ public abstract class AbstractSyntaxCaret extends DefaultCaret {
 		 */
 		public NoHighlightPainter() {
 			super(Color.BLACK);
+		}
+	}
+
+	public static class NormalSelectionPainter extends SyntaxHighlightePainter {
+		public NormalSelectionPainter(Color color) {
+			super(color);
 		}
 	}
 }

@@ -27,6 +27,7 @@ import com.syntax.manage.SyntaxHighlighter;
 import com.syntax.manage.SyntaxHighlightingTool;
 import com.syntax.manage.SyntaxPainter;
 import com.syntax.manage.SyntaxSelectionListener;
+import com.syntax.manage.SyntaxHighlighter.BasicSelectionListener;
 import com.syntax.manage.shortcut.CtrlY;
 import com.syntax.manage.shortcut.CtrlZ;
 import com.syntax.manage.shortcut.ShiftTab;
@@ -46,6 +47,7 @@ public class SyntaxTextArea extends JTextPane {
     private SyntaxSelectionListener mSyntaxSelectionListener;
     private SyntaxHighlighter mSyntaxHighlighter;
     private SyntaxDocumentTool mSyntaxDocumentTool;
+    private InnerSyntaxSelectionCaretListener mInnerSyntaxSelectionCaretListener;
     private int maxTabNum;
 
     /**
@@ -76,6 +78,7 @@ public class SyntaxTextArea extends JTextPane {
         mStyledTextBody         = new StyledTextBody();
         mSyntaxHighlighter      = new SyntaxHighlighter(mSyntaxManager);
         mSyntaxDocumentTool     = new SyntaxDocumentTool(this, mSyntaxManager);
+        mInnerSyntaxSelectionCaretListener = new InnerSyntaxSelectionCaretListener();
         maxTabNum               = DEFAULT_MAX_TAB_NUM;
         setStyledDocument(mSyntaxStyledDocument);
         setCodeAdapter(codeAdapter);
@@ -87,7 +90,8 @@ public class SyntaxTextArea extends JTextPane {
         mStyledTextBody.setStyledChangeListener(mSyntaxStyledDocument);
         mStyledTextBody.setTextChangeListener(mSyntaxStyledDocument);
         setHighlighter(mSyntaxHighlighter);
-        addCaretListener(new InnerSyntaxCaretListener());
+        addCaretListener(mInnerSyntaxSelectionCaretListener);
+        mSyntaxHighlighter.setBasicSelectionListener(mInnerSyntaxSelectionCaretListener);
 
         addShortCut(new ShiftTab());
         addShortCut(new CtrlZ());
@@ -281,23 +285,35 @@ public class SyntaxTextArea extends JTextPane {
         }
     }
 
-    private class InnerSyntaxCaretListener implements CaretListener {
+    private class InnerSyntaxSelectionCaretListener implements CaretListener, BasicSelectionListener {
+        @Override
         public void caretUpdate(CaretEvent event) {
             int dot = event.getDot();
             int mark = event.getMark();
             int start = Math.min(dot, mark);
             int end = Math.max(dot, mark);
-            if(mSyntaxCaretListener != null) {
+            if(start == end && mSyntaxCaretListener != null) {
+                //TODO
+                mSyntaxCaretListener.caretUpdate(SyntaxTextArea.this, null, getCaretPosition(), mStyledTextBody, mSyntaxHighlighter);
+                /*
                 try {
-                    Rectangle rec = modelToView(getCaretPosition());
+                    Rectangle rec = SyntaxTextArea.this.modelToView(getCaretPosition());
                     mSyntaxCaretListener.caretUpdate(SyntaxTextArea.this, rec, getCaretPosition(), mStyledTextBody, mSyntaxHighlighter);
                 } catch (BadLocationException e) {
                     // Can't model caret position to view.
                 }
+                */
             }
-            if(start != end && mSyntaxSelectionListener != null)
-                // TODO bugs
-                mSyntaxSelectionListener.selectionChange(SyntaxTextArea.this, start, end, mStyledTextBody, mSyntaxHighlighter);
+        }
+        @Override
+        public void selectionChange(int p0,int p1) {
+            if(mSyntaxSelectionListener != null)
+                mSyntaxSelectionListener.selectionChange(SyntaxTextArea.this, p0, p1, mStyledTextBody, mSyntaxHighlighter);
+        }
+        @Override
+        public void selectionRemove() {
+            if(mSyntaxSelectionListener != null)
+                mSyntaxSelectionListener.selectionRemove(SyntaxTextArea.this, mStyledTextBody, mSyntaxHighlighter);
         }
     }
 }

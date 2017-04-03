@@ -22,7 +22,7 @@ public class SyntaxDocumentTool {
     /**
      * Find the begin index of line where position p at, suppose that p is an caret which
      * is located in the gap between character
-     * TODO
+     * 
      * @param p the imaginary caret position, 0 &le; p &le; {@link StyledTextBody#length() length()}
      * @return begin index of line
      * @throws SyntaxException if p out of rang

@@ -13,6 +13,7 @@ import javax.swing.text.JTextComponent;
 
 import com.syntax.ui.SyntaxTextArea;
 import com.syntax.ui.AbstractSyntaxCaret.NoHighlightPainter;
+import com.syntax.ui.AbstractSyntaxCaret.NormalSelectionPainter;
 /**
  * Implement SyntaxHighlightingTool to support highlighting on SyntaxTextArea
  * 
@@ -22,8 +23,9 @@ import com.syntax.ui.AbstractSyntaxCaret.NoHighlightPainter;
 
 public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighlightingTool {
     private JTextComponent mTextComponent;
-    private SyntaxHighlightePainter mPainter;
     private ArrayList<SyntaxHighlight> highlights;
+    private BasicSelectionListener mBasicSelectionListener = null;
+
     /**
      * Construct with default SyntaxManager
      * 
@@ -39,7 +41,6 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
      * @see SyntaxManager
      */
     public SyntaxHighlighter(SyntaxManager mSyntaxManager) {
-        mPainter = new SyntaxHighlightePainter(mSyntaxManager.getHighlightColor());
         highlights = new ArrayList<>();
     }
     /**
@@ -56,8 +57,14 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
     public Object addHighlight(int p0, int p1, javax.swing.text.Highlighter.HighlightPainter p) throws BadLocationException {
         if(p instanceof NoHighlightPainter)
             return p;
-        else
-            return super.addHighlight(p0, p1, p);
+
+        Object tag = super.addHighlight(p0, p1, p);
+        if(p instanceof NormalSelectionPainter) {
+            if(mBasicSelectionListener != null)
+                mBasicSelectionListener.selectionChange(p0, p1);
+            return new NormalSelectionInfo(tag);
+        } else
+            return tag;
     }
     /**
      * Change Highlight on SyntaxTextArea
@@ -72,7 +79,13 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
     public void changeHighlight(Object tag, int p0, int p1) throws BadLocationException {
         if(tag instanceof NoHighlightPainter)
             return;
-        else
+            
+        if(tag instanceof NormalSelectionPainter) {
+            NormalSelectionInfo nTag = (NormalSelectionInfo)tag;
+            super.changeHighlight(nTag.get(), p0, p1);
+            if(mBasicSelectionListener != null)
+                mBasicSelectionListener.selectionChange(p0, p1);
+        } else
             super.changeHighlight(tag, p0, p1);
     }
     /**
@@ -84,7 +97,13 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
     public void removeHighlight(Object tag) {
         if(tag instanceof NoHighlightPainter)
             return;
-        else
+        
+        if(tag instanceof NormalSelectionPainter) {
+            NormalSelectionInfo nTag = (NormalSelectionInfo)tag;
+            super.removeHighlight(nTag.get());
+            if(mBasicSelectionListener != null)
+                mBasicSelectionListener.selectionRemove();
+        } else
             super.removeHighlight(tag);
     }
     /**
@@ -123,7 +142,6 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
     public SyntaxHighlight syntaxHighlight(int start, int end, Color color) throws SyntaxException {
         if(mTextComponent == null)
             throw new SyntaxException("SyntaxHighlighter is not installed");
-        mPainter.setColor(color);
         Object key = null;
         try {
             key = super.addHighlight(start, end, new DefaultHighlightPainter(color));
@@ -169,6 +187,22 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
             for(SyntaxHighlight h: highlights)
                 removeHighlight(h.getKey());
         highlights.clear();
+    }
+    /**
+     * Set BasicSelectionListener
+     * 
+     * @param mBasicSelectionListener set listener which listen to the selection update
+     */
+    public void setBasicSelectionListener(BasicSelectionListener l) {
+        mBasicSelectionListener = l;
+    }
+    /**
+     * Get BasicSelectionListener
+     * 
+     * @return registered BasicSelectionListener, otherwise return null
+     */
+    public BasicSelectionListener getBasicSelectionListener() {
+        return mBasicSelectionListener;
     }
     /**
      * Support modification of highlighting color
@@ -287,5 +321,20 @@ public class SyntaxHighlighter extends DefaultHighlighter implements SyntaxHighl
         public Object getKey() {
             return key;
         }
+    }
+
+    private class NormalSelectionInfo {
+        private Object tag;
+        public NormalSelectionInfo(Object tag) {
+            this.tag = tag;
+        }
+        public Object get() {
+            return tag;
+        }
+    }
+
+    public interface BasicSelectionListener {
+        void selectionChange(int p0,int p1);
+        void selectionRemove();
     }
 }

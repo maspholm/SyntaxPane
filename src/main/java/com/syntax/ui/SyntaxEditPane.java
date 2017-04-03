@@ -12,7 +12,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Element;
 
 import com.syntax.manage.AbstractCodeAdapter;
+import com.syntax.manage.SyntaxCaretListener;
 import com.syntax.manage.SyntaxManager;
+import com.syntax.manage.SyntaxSelectionListener;
 /**
  * Support editting text with shortcut keys and scrollbars. 
  * By default setting, edit pane will show line number of content in the left of text area.
@@ -130,6 +132,22 @@ public class SyntaxEditPane extends JScrollPane {
      */
     public void setHorizontalScrollSensivity(int unit) {
 		getHorizontalScrollBar().setUnitIncrement(unit);
+    }
+    /**
+     * Set SyntaxCaretListener for caret updating
+     * 
+     * @param l specified SyntaxCaretListener
+     */
+    public void setSyntaxCaretListener(SyntaxCaretListener l) {
+        mSyntaxTextArea.setSyntaxCaretListener(l);
+    }
+    /**
+     * Set SyntaxSelectionListener for selection updating
+     * 
+     * @param l specified SyntaxSelectionListener
+     */
+    public void setSyntaxSelectionListener(SyntaxSelectionListener l) {
+        mSyntaxTextArea.setSyntaxSelectionListener(l);
     }
     private class SyntaxEditPaneHeader implements DocumentListener {
         @Override
