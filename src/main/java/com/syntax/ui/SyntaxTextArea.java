@@ -293,9 +293,9 @@ public class SyntaxTextArea extends JTextPane {
             int start = Math.min(dot, mark);
             int end = Math.max(dot, mark);
             if(start == end && mSyntaxCaretListener != null) {
-                //TODO
                 mSyntaxCaretListener.caretUpdate(SyntaxTextArea.this, null, getCaretPosition(), mStyledTextBody, mSyntaxHighlighter);
                 /*
+                //TODO
                 try {
                     Rectangle rec = SyntaxTextArea.this.modelToView(getCaretPosition());
                     mSyntaxCaretListener.caretUpdate(SyntaxTextArea.this, rec, getCaretPosition(), mStyledTextBody, mSyntaxHighlighter);
